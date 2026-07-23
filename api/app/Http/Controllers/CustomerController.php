@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -10,9 +13,11 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
+        $customers = Customer::latest()->get();
 
+        return response()->json($customers);
     }
 
     /**
@@ -26,17 +31,23 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request): JsonResponse
     {
-        //
+        $customer = Customer::create($request->validated());
+        
+        return response()->json([
+            'message' => 'Customer created successfully.',
+            'data' => $customer,
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show(int $id): JsonResponse
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return response()->json($id);
     }
 
     /**
@@ -50,16 +61,40 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, int $id): JsonResponse
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        $customer->update($request->validated());
+
+        return response()->json([
+            'message' => 'Customer updated successfully',
+            'data' => $customer
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Customer $customer)
+    public function destroy(int $id): JsonResponse
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        $customer->delete();
+
+        return response()->json([
+            'message' => 'Customer deleted successfully',
+        ]);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $customer = Customer::findOrFail($id);
+
+        $customer->restore();
+
+        return response()->json([
+            'message' => 'Customer restored successfully',
+        ]);
     }
 }
