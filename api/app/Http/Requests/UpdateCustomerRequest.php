@@ -13,7 +13,7 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,7 +26,7 @@ class UpdateCustomerRequest extends FormRequest
         return [
             'first_name'        => ['required', 'string', 'max:255'],
             'last_name'         => ['required', 'string', 'max:255'],
-            'email'             => ['required', 'email', Rule::unique('customers', 'email')->ignore($this->route(('id')))],
+            'email'             => ['required', 'email', Rule::unique('customers', 'email')->ignore($this->route('id'))],
             'contact_number'    => ['required', 'string', 'max:255'],
         ];
     }

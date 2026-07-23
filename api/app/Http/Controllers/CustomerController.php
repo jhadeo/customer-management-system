@@ -34,7 +34,7 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request): JsonResponse
     {
         $customer = Customer::create($request->validated());
-        
+
         return response()->json([
             'message' => 'Customer created successfully.',
             'data' => $customer,
@@ -47,7 +47,7 @@ class CustomerController extends Controller
     public function show(int $id): JsonResponse
     {
         $customer = Customer::findOrFail($id);
-        return response()->json($id);
+        return response()->json($customer);
     }
 
     /**
@@ -89,7 +89,7 @@ class CustomerController extends Controller
 
     public function restore(int $id): JsonResponse
     {
-        $customer = Customer::findOrFail($id);
+        $customer = Customer::withTrashed()->findOrFail($id);
 
         $customer->restore();
 
