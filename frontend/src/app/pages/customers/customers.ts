@@ -6,10 +6,12 @@ import { Customer } from '../../models/customer';
 
 @Component({
   selector: 'app-customers',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './customers.html',
   styleUrl: './customers.css',
 })
+
 export class Customers implements OnInit {
   private customerService = inject(CustomerService);
 

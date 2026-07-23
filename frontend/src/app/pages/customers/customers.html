@@ -1,1 +1,11 @@
-<p>customers works!</p>
+<h1>Customers</h1>
+
+<ul>
+  @for (customer of customers; track customer.id) {
+    <li>
+      {{ customer.first_name }}
+      {{ customer.last_name }}
+      - {{ customer.email }}
+    </li>
+  }
+</ul>
