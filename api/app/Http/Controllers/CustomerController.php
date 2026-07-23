@@ -7,17 +7,29 @@ use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\ElasticsearchService;
 
 class CustomerController extends Controller
 {
+    
+    protected ElasticsearchService $elasticsearch;
+
+
+    public function __construct(ElasticsearchService $elasticsearch)
+    {
+        $this->elasticsearch = $elasticsearch;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
-    {
-        $customers = Customer::latest()->get();
 
-        return response()->json($customers);
+    public function index(Request $request)
+    {
+        if ($request->filled('search')) {
+            return $this->elasticsearch->searchCustomers($request->search);
+        }
+
+        return Customer::all();
     }
 
     /**
@@ -34,6 +46,8 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request): JsonResponse
     {
         $customer = Customer::create($request->validated());
+
+        $this->elasticsearch->indexCustomer($customer);
 
         return response()->json([
             'message' => 'Customer created successfully.',
@@ -67,6 +81,8 @@ class CustomerController extends Controller
 
         $customer->update($request->validated());
 
+        $this->elasticsearch->indexCustomer($customer);
+
         return response()->json([
             'message' => 'Customer updated successfully',
             'data' => $customer
@@ -81,6 +97,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
 
         $customer->delete();
+        $this->elasticsearch->deleteCustomer($customer);
 
         return response()->json([
             'message' => 'Customer deleted successfully',
@@ -92,6 +109,7 @@ class CustomerController extends Controller
         $customer = Customer::withTrashed()->findOrFail($id);
 
         $customer->restore();
+        $this->elasticsearch->indexCustomer($customer);
 
         return response()->json([
             'message' => 'Customer restored successfully',
