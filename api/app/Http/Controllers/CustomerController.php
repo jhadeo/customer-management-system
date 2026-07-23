@@ -19,10 +19,10 @@ class CustomerController extends Controller
     {
         $this->elasticsearch = $elasticsearch;
     }
+    
     /**
      * Display a listing of the resource.
      */
-
     public function index(Request $request)
     {
         if ($request->filled('search')) {
@@ -30,14 +30,6 @@ class CustomerController extends Controller
         }
 
         return Customer::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -62,14 +54,6 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         return response()->json($customer);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customer $customer)
-    {
-        //
     }
 
     /**
@@ -104,6 +88,9 @@ class CustomerController extends Controller
         ]);
     }
 
+    /**
+     * Restore the specified resource from storage.
+     */
     public function restore(int $id): JsonResponse
     {
         $customer = Customer::withTrashed()->findOrFail($id);

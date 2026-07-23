@@ -39,7 +39,7 @@ class ElasticsearchService
 
     public function searchCustomers(string $query)
     {
-        return Http::post(
+        $response = Http::post(
             "{$this->baseUrl}/{$this->index}/_search",
             [
                 "query" => [
@@ -54,6 +54,10 @@ class ElasticsearchService
                     ]
                 ]
             ]
-        )->json();;
+        )->json();
+
+        return collect($response['hits']['hits'] ?? [])->map(function ($hit) {
+            return $hit['_source'];
+        })->values();
     }
 }
